@@ -4,7 +4,9 @@ from typing import Type, assert_never
 
 import pandas as pd
 from pandas import DatetimeIndex
-from pandas._libs.tslibs import BaseOffset  # TODO str, Timedelta, datetime.timedelta, or DateOffset
+from pandas._libs.tslibs import (
+    BaseOffset,
+)  # TODO str, Timedelta, datetime.timedelta, or DateOffset
 from pydantic import BaseModel
 
 from models import Temporal
