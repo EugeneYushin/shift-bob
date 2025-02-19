@@ -31,7 +31,9 @@ class Rotation(BaseModel, frozen=True):
     fighters: list[str]
     start_date: datetime.datetime
     # set default end_date as (start_date + 365 days)
-    end_date: datetime.datetime = Field(default_factory=lambda data: data["start_date"] + datetime.timedelta(days=365))
+    end_date: datetime.datetime = Field(
+        default_factory=lambda data: data["start_date"] + datetime.timedelta(days=365)
+    )
     timezone: str = Field(default_factory=lambda _: Config().timezone)
 
     def __hash__(self):

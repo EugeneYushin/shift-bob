@@ -1,9 +1,11 @@
+import datetime
 import logging
 from itertools import pairwise, cycle
 from zoneinfo import ZoneInfo
 
+from config import Config
+from models import Rotation, Shift
 from shifter import Shifter
-from models import *
 from store.factory import StoreFactory
 
 logger = logging.getLogger(__name__)
@@ -51,7 +53,9 @@ class OncallService:
 
         return self.store_factory.shifts(rotation).find(now)
 
-    def get_shifts(self, now: datetime.datetime | None = None, limit: int = 5) -> list[Shift]:
+    def get_shifts(
+        self, now: datetime.datetime | None = None, limit: int = 5
+    ) -> list[Shift]:
         """Sorted list of shifts starting from now."""
         if now is None:
             now = datetime.datetime.now(tz=ZoneInfo(Config().timezone))

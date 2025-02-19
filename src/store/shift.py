@@ -1,14 +1,9 @@
 import abc
 import datetime
-import itertools
 import logging
 from abc import abstractmethod
-from datetime import timedelta
-from itertools import takewhile
-from typing import assert_never
 
-import utils
-from models import *
+from models import Rotation, Shift
 
 logger = logging.getLogger(__name__)
 
@@ -18,20 +13,18 @@ class ShiftStore(abc.ABC):
         self.rotation = rotation
 
     @abstractmethod
-    def find(self, dt: datetime.datetime) -> Shift | None:
-        ...
+    def find(self, dt: datetime.datetime) -> Shift | None: ...
 
     @abstractmethod
-    def list(self, dt_from: datetime.datetime | None = None, limit: int | None = None) -> list[Shift]:
-        ...
+    def list(
+        self, dt_from: datetime.datetime | None = None, limit: int | None = None
+    ) -> list[Shift]: ...
 
     @abstractmethod
-    def create(self, shift: Shift) -> None:
-        ...
+    def create(self, shift: Shift) -> None: ...
 
     @abstractmethod
-    def update(self, shift: Shift, new_shift: Shift) -> None:
-        ...
+    def update(self, shift: Shift, new_shift: Shift) -> None: ...
 
 
 class InMemoryShiftStore(ShiftStore):
@@ -41,9 +34,14 @@ class InMemoryShiftStore(ShiftStore):
 
     def find(self, dt: datetime.datetime) -> Shift | None:
         # None as default
-        return next(filter(lambda shift: shift.start_date <= dt < shift.end_date, self.list()), None)
+        return next(
+            filter(lambda shift: shift.start_date <= dt < shift.end_date, self.list()),
+            None,
+        )
 
-    def list(self, dt_from: datetime.datetime | None = None, limit: int | None = None) -> list[Shift]:
+    def list(
+        self, dt_from: datetime.datetime | None = None, limit: int | None = None
+    ) -> list[Shift]:
         # dt_from = dt_from or datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
         shifts = self._shifts
         if dt_from:
@@ -56,4 +54,3 @@ class InMemoryShiftStore(ShiftStore):
     def update(self, shift: Shift, new_shift: Shift) -> None:
         # TODO implement
         pass
-

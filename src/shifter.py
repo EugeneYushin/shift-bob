@@ -15,11 +15,12 @@ class Shifter(BaseModel, ABC):
     end_dt: dt.datetime
 
     @abstractmethod
-    def get_index(self, freq: int) -> DatetimeIndex:
-        ...
+    def get_index(self, freq: int) -> DatetimeIndex: ...
 
     @classmethod
-    def apply(cls, start_dt: dt.datetime, end_dt: dt.datetime, temporal: Temporal) -> "Shifter":
+    def apply(
+        cls, start_dt: dt.datetime, end_dt: dt.datetime, temporal: Temporal
+    ) -> "Shifter":
         match temporal:
             case Temporal.day:
                 return DailyShifter(start_dt=start_dt, end_dt=end_dt)
@@ -35,7 +36,9 @@ class BaseShifter(Shifter):
     offset: Type[BaseOffset]
 
     def get_index(self, freq: int) -> DatetimeIndex:
-        return pd.date_range(start=self.start_dt, end=self.end_dt, freq=self.offset(freq)).to_pydatetime()
+        return pd.date_range(
+            start=self.start_dt, end=self.end_dt, freq=self.offset(freq)
+        ).to_pydatetime()
 
 
 class DailyShifter(BaseShifter):

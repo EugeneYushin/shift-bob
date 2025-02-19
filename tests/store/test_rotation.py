@@ -45,7 +45,9 @@ def test_rotation__get_by_id__should_return_none_if_not_exists():
     assert store.get_by_id("empty") is None
 
 
-def test_rotation__get_by_date__should_return_closest_rotation(rotations: list[Rotation]):
+def test_rotation__get_by_date__should_return_closest_rotation(
+    rotations: list[Rotation],
+):
     store = InMemoryRotationStore()
 
     for r in rotations:

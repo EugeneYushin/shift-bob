@@ -18,7 +18,11 @@ from slack_sdk.models.blocks import (
     Option,
     SectionBlock,
     MarkdownTextObject,
-    UserMultiSelectElement, StaticSelectElement, ActionsBlock, DatePickerElement, TimePickerElement
+    UserMultiSelectElement,
+    StaticSelectElement,
+    ActionsBlock,
+    DatePickerElement,
+    TimePickerElement,
 )
 from slack_sdk.models.views import View
 
@@ -36,13 +40,17 @@ store_factory = StoreFactory.apply(Config())
 
 
 @app.middleware  # or app.use(log_request)
-def log_request(logger: Logger, body: dict, next: Callable[[], BoltResponse]) -> BoltResponse:
+def log_request(
+    logger: Logger, body: dict, next: Callable[[], BoltResponse]
+) -> BoltResponse:
     logger.debug(body)
     return next()
 
 
 @app.command("/onlist")
-def handle_list(body: dict, ack: Ack, respond: Respond, client: WebClient, logger: Logger) -> None:
+def handle_list(
+    body: dict, ack: Ack, respond: Respond, client: WebClient, logger: Logger
+) -> None:
     logger.info(body)
     ack()
 
@@ -58,8 +66,12 @@ def handle_list(body: dict, ack: Ack, respond: Respond, client: WebClient, logge
     firefighter = current_shift.firefighter
 
     # headers = [MarkdownTextObject(text="*Shifts:*"), MarkdownTextObject(text="*Swaps:*")]
-    fields = [MarkdownTextObject(text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M')}` <@{s.firefighter}>") for s in
-              shifts]
+    fields = [
+        MarkdownTextObject(
+            text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M')}` <@{s.firefighter}>"
+        )
+        for s in shifts
+    ]
     # TODO pad with swaps
     padding_fields = [MarkdownTextObject(text=" ") for _ in shifts]
     tz = current_shift.start_date.tzname()
@@ -68,23 +80,30 @@ def handle_list(body: dict, ack: Ack, respond: Respond, client: WebClient, logge
         blocks=[
             SectionBlock(
                 block_id="list_current",
-                text=MarkdownTextObject(text=f"*Current firefighter:* <@{firefighter}>"),
+                text=MarkdownTextObject(
+                    text=f"*Current firefighter:* <@{firefighter}>"
+                ),
             ),
             SectionBlock(
                 block_id="list_shifts_header",
-                fields=[MarkdownTextObject(text="*Shifts:*"), MarkdownTextObject(text="*Swaps:*")],
+                fields=[
+                    MarkdownTextObject(text="*Shifts:*"),
+                    MarkdownTextObject(text="*Swaps:*"),
+                ],
             ),
             SectionBlock(
                 block_id="list_shifts",
                 # slack_sdk.errors.SlackObjectFormationError: fields attribute cannot exceed 10 items
-                fields=reduce(concat, zip(fields, padding_fields)),  # flatten pairwise (shifts+swaps side-by-side)
+                fields=reduce(
+                    concat, zip(fields, padding_fields)
+                ),  # flatten pairwise (shifts+swaps side-by-side)
             ),
             SectionBlock(
                 block_id="list_tz",
                 # TODO format timezone (read it from rotation object)?!
                 text=f"Timezone: {tz}",
                 # text=MarkdownTextObject(),
-            )
+            ),
         ],
         response_type="in_channel",
     )
@@ -118,18 +137,27 @@ def handle_oncall(body: dict, ack: Ack, client: WebClient, logger: Logger) -> No
                     elements=[
                         StaticSelectElement(
                             action_id="schedule_each_select",
-                            options=[Option(text=PlainTextObject(text=str(i)), value=str(i)) for i in range(1, 32)],
-                            initial_option=Option(text=PlainTextObject(text="1"), value="1"),
+                            options=[
+                                Option(text=PlainTextObject(text=str(i)), value=str(i))
+                                for i in range(1, 32)
+                            ],
+                            initial_option=Option(
+                                text=PlainTextObject(text="1"), value="1"
+                            ),
                         ),
                         StaticSelectElement(
                             action_id="schedule_temporal_select",
                             options=[
                                 Option(text=PlainTextObject(text="days"), value="day"),
-                                Option(text=PlainTextObject(text="weeks"), value="week"),
+                                Option(
+                                    text=PlainTextObject(text="weeks"), value="week"
+                                ),
                             ],
-                            initial_option=Option(text=PlainTextObject(text="days"), value="day"),
+                            initial_option=Option(
+                                text=PlainTextObject(text="days"), value="day"
+                            ),
                         ),
-                    ]
+                    ],
                 ),
                 ActionsBlock(
                     block_id="start_end_block",
@@ -148,9 +176,9 @@ def handle_oncall(body: dict, ack: Ack, client: WebClient, logger: Logger) -> No
                         #     initial_date_time=int(datetime.datetime.now().timestamp()),
                         # )
                     ],
-                )
+                ),
             ],
-        )
+        ),
     )
 
 
@@ -161,15 +189,33 @@ def view_submission(ack: Ack, body: dict, logger: Logger) -> None:
     values_focus = lens.Get("view").Get("state").Get("values")
 
     option_val = lens.Get("selected_option").Get("value")
-    each_focus = values_focus & lens.Get("schedule_block").Get("schedule_each_select") & option_val
-    temporal_focus = values_focus & lens.Get("schedule_block").Get("schedule_temporal_select") & option_val
+    each_focus = (
+        values_focus
+        & lens.Get("schedule_block").Get("schedule_each_select")
+        & option_val
+    )
+    temporal_focus = (
+        values_focus
+        & lens.Get("schedule_block").Get("schedule_temporal_select")
+        & option_val
+    )
 
     each = body & each_focus.F(int).get()
     temporal = body & temporal_focus.F(Temporal).get()
 
-    users = body & (values_focus & lens["fighters_block"]["fighters_select"]["selected_users"]).get()
+    users = (
+        body
+        & (
+            values_focus & lens["fighters_block"]["fighters_select"]["selected_users"]
+        ).get()
+    )
 
-    start_date = body & (values_focus & lens["start_end_block"]["start_date_select"]["selected_date"]).get()
+    start_date = (
+        body
+        & (
+            values_focus & lens["start_end_block"]["start_date_select"]["selected_date"]
+        ).get()
+    )
     start_time_focus = lens["start_end_block"]["start_time_select"]
     start_time = body & (values_focus & start_time_focus & lens["selected_time"]).get()
     start_time_tz = body & (values_focus & start_time_focus & lens["timezone"]).get()
@@ -177,7 +223,9 @@ def view_submission(ack: Ack, body: dict, logger: Logger) -> None:
     rotation = Rotation(
         schedule=Schedule(each=each, temporal=temporal),
         fighters=users,
-        start_date=datetime.fromisoformat(f"{start_date}T{start_time}").replace(tzinfo=ZoneInfo(start_time_tz)),
+        start_date=datetime.fromisoformat(f"{start_date}T{start_time}").replace(
+            tzinfo=ZoneInfo(start_time_tz)
+        ),
     )
 
     oncall_svc = OncallService(store_factory)

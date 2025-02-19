@@ -1,23 +1,21 @@
+import datetime
 import logging
 from abc import abstractmethod, ABC
 
-from models import *
+from models import Rotation
 
 logger = logging.getLogger(__name__)
 
 
 class RotationStore(ABC):
     @abstractmethod
-    def get_by_id(self, id: str) -> Rotation | None:
-        ...
+    def get_by_id(self, id: str) -> Rotation | None: ...
 
     @abstractmethod
-    def get_by_date(self, dt: datetime.datetime) -> Rotation | None:
-        ...
+    def get_by_date(self, dt: datetime.datetime) -> Rotation | None: ...
 
     @abstractmethod
-    def create(self, rotation: Rotation) -> None:
-        ...
+    def create(self, rotation: Rotation) -> None: ...
 
 
 class InMemoryRotationStore(RotationStore):
@@ -34,5 +32,5 @@ class InMemoryRotationStore(RotationStore):
         return min(
             [r for r in self._rotations.values() if r.start_date <= dt < r.end_date],
             key=lambda r: dt - r.start_date,
-            default=None
+            default=None,
         )

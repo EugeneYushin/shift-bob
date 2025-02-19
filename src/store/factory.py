@@ -10,12 +10,10 @@ from store.shift import ShiftStore, InMemoryShiftStore
 
 class StoreFactory:
     @abstractmethod
-    def rotation(self) -> RotationStore:
-        ...
+    def rotation(self) -> RotationStore: ...
 
     @abstractmethod
-    def shifts(self, rotation: Rotation) -> ShiftStore:
-        ...
+    def shifts(self, rotation: Rotation) -> ShiftStore: ...
 
     @classmethod
     def apply(cls, config: Config) -> "StoreFactory":
