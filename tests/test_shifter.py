@@ -15,3 +15,15 @@ def test_bdayshifter__should_skip_weekends():
         dt.datetime(2025, 1, 7),
         dt.datetime(2025, 1, 9),
     ]
+
+
+def test_bdayshifter__should_start_on_first_bday_after_weekend():
+    shifter = BDayShifter(
+        start_dt=dt.datetime(2025, 1, 4), end_dt=dt.datetime(2025, 1, 9)
+    )
+    assert list(shifter.get_index(1)) == [
+        dt.datetime(2025, 1, 6),
+        dt.datetime(2025, 1, 7),
+        dt.datetime(2025, 1, 8),
+        dt.datetime(2025, 1, 9),
+    ]
