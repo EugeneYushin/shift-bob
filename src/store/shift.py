@@ -1,0 +1,59 @@
+import abc
+import datetime
+import itertools
+import logging
+from abc import abstractmethod
+from datetime import timedelta
+from itertools import takewhile
+from typing import assert_never
+
+import utils
+from models import *
+
+logger = logging.getLogger(__name__)
+
+
+class ShiftStore(abc.ABC):
+    def __init__(self, rotation: Rotation):
+        self.rotation = rotation
+
+    @abstractmethod
+    def find(self, dt: datetime.datetime) -> Shift | None:
+        ...
+
+    @abstractmethod
+    def list(self, dt_from: datetime.datetime | None = None, limit: int | None = None) -> list[Shift]:
+        ...
+
+    @abstractmethod
+    def create(self, shift: Shift) -> None:
+        ...
+
+    @abstractmethod
+    def update(self, shift: Shift, new_shift: Shift) -> None:
+        ...
+
+
+class InMemoryShiftStore(ShiftStore):
+    def __init__(self, rotation: Rotation):
+        super().__init__(rotation)
+        self._shifts: list[Shift] = []
+
+    def find(self, dt: datetime.datetime) -> Shift | None:
+        # None as default
+        return next(filter(lambda shift: shift.start_date <= dt < shift.end_date, self.list()), None)
+
+    def list(self, dt_from: datetime.datetime | None = None, limit: int | None = None) -> list[Shift]:
+        # dt_from = dt_from or datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        shifts = self._shifts
+        if dt_from:
+            shifts = filter(lambda shift: shift.start_date > dt_from, self._shifts)
+        return list(shifts)[:limit]
+
+    def create(self, shift: Shift) -> None:
+        self._shifts.append(shift)
+
+    def update(self, shift: Shift, new_shift: Shift) -> None:
+        # TODO implement
+        pass
+

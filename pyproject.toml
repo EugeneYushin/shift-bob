@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "bob"
+version = "0.1.0"
+description = "On-call rotation Slack app."
+authors = ["square pants"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.3"
+slack-bolt = "^1.22.0"
+pydantic = "^2.10.6"
+lenses = "^1.2.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = ">=8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
