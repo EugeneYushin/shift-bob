@@ -22,4 +22,4 @@ jobs:
           poetry sync
       - name: run tests
         run: |
-          poetry run pytest          
+          poetry run pytest
