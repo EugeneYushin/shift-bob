@@ -1,0 +1,25 @@
+name: unit tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    # Avoiding -latest due to https://github.com/actions/setup-python/issues/162
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: install poetry
+        uses: snok/install-poetry@v1
+      - name: install dependencies
+        run: |
+          poetry sync
+      - name: run tests
+        run: |
+          poetry run pytest          
