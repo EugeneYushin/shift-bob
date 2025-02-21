@@ -47,7 +47,7 @@ def log_request(
     return next()
 
 
-@app.command("/onlist")
+@app.command("/oncall-list")
 def handle_list(
     body: dict, ack: Ack, respond: Respond, client: WebClient, logger: Logger
 ) -> None:
