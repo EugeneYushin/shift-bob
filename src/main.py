@@ -47,7 +47,7 @@ def log_request(
     return next()
 
 
-@app.command("/onlist")
+@app.command("/oncall-list")
 def handle_list(
     body: dict, ack: Ack, respond: Respond, client: WebClient, logger: Logger
 ) -> None:
@@ -129,7 +129,7 @@ def handle_oncall(body: dict, ack: Ack, client: WebClient, logger: Logger) -> No
                     element=UserMultiSelectElement(
                         action_id="fighters_select",
                         placeholder=PlainTextObject(text="Choose you fighters"),
-                        initial_users=["U08BU7RGGGM"],  # TODO remove
+                        initial_users=[],
                     ),
                     label=PlainTextObject(text="Fighters"),
                 ),
