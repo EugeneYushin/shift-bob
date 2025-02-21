@@ -17,6 +17,7 @@ lenses = "^1.2.0"
 pytest = "^8.3.4"
 ruff = "^0.9.6"
 pre-commit = "^4.1.0"
+mypy = "^1.15.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -26,3 +27,9 @@ build-backend = "poetry.core.masonry.api"
 pythonpath = [
   "src"
 ]
+
+[tool.mypy]
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_ignores = true
+#strict = true

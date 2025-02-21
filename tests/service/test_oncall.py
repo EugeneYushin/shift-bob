@@ -29,6 +29,7 @@ def test_oncall_service__get_current_shift(rotation: Rotation):
     svc.create_rotation(rotation)
 
     actual_shift = svc.get_current_shift(dt.datetime(2024, 12, 31))
+    assert actual_shift
     assert actual_shift == Shift(
         id=actual_shift.id,
         firefighter="f1",

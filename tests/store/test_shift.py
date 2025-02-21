@@ -70,7 +70,9 @@ def test_shift__find(
     for s in shifts:
         store.create(s)
 
-    assert store.find(dt).id == expected_id
+    actual_shift = store.find(dt)
+    assert actual_shift
+    assert actual_shift.id == expected_id
 
 
 def test_shift__find__should_return_none_if_no_shift_exists(

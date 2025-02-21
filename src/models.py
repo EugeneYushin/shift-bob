@@ -2,7 +2,7 @@ import datetime
 import uuid
 from enum import StrEnum, auto
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from config import Config
 
@@ -13,19 +13,23 @@ class Temporal(StrEnum):
     week = auto()
 
 
-class Schedule(BaseModel, frozen=True):
+class Schedule(BaseModel):
     each: int
     temporal: Temporal
 
+    model_config = ConfigDict(frozen=True)
 
-class Shift(BaseModel, frozen=True):
+
+class Shift(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     firefighter: str
     start_date: datetime.datetime
     end_date: datetime.datetime
 
+    model_config = ConfigDict(frozen=True)
 
-class Rotation(BaseModel, frozen=True):
+
+class Rotation(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     schedule: Schedule
     fighters: list[str]
@@ -35,6 +39,8 @@ class Rotation(BaseModel, frozen=True):
         default_factory=lambda data: data["start_date"] + datetime.timedelta(days=365)
     )
     timezone: str = Field(default_factory=lambda _: Config().timezone)
+
+    model_config = ConfigDict(frozen=True)
 
     def __hash__(self):
         try:
