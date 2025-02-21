@@ -129,7 +129,7 @@ def handle_oncall(body: dict, ack: Ack, client: WebClient, logger: Logger) -> No
                     element=UserMultiSelectElement(
                         action_id="fighters_select",
                         placeholder=PlainTextObject(text="Choose you fighters"),
-                        initial_users=["U08BU7RGGGM"],  # TODO remove
+                        initial_users=[],
                     ),
                     label=PlainTextObject(text="Fighters"),
                 ),
