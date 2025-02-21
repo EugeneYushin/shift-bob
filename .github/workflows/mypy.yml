@@ -16,4 +16,4 @@ jobs:
           poetry sync
       - name: run mypy
         run: |
-          poetry run mypy
+          poetry run mypy src/ tests/
