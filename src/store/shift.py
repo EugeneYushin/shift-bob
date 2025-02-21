@@ -33,11 +33,8 @@ class InMemoryShiftStore(ShiftStore):
         self._shifts: list[Shift] = []
 
     def find(self, dt: datetime.datetime) -> Shift | None:
-        # None as default
-        return next(
-            filter(lambda shift: shift.start_date <= dt < shift.end_date, self.list()),
-            None,
-        )
+        xl = filter(lambda shift: shift.start_date <= dt < shift.end_date, self._shifts)
+        return next(xl, None)
 
     def list(
         self, dt_from: datetime.datetime | None = None, limit: int | None = None
@@ -45,8 +42,10 @@ class InMemoryShiftStore(ShiftStore):
         # dt_from = dt_from or datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
         shifts = self._shifts
         if dt_from:
-            shifts = filter(lambda shift: shift.start_date > dt_from, self._shifts)
-        return list(shifts)[:limit]
+            shifts = list(
+                filter(lambda shift: shift.start_date > dt_from, self._shifts)
+            )
+        return shifts[:limit]
 
     def create(self, shift: Shift) -> None:
         self._shifts.append(shift)

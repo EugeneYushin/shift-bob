@@ -95,7 +95,8 @@ def handle_list(
                 block_id="list_shifts",
                 # slack_sdk.errors.SlackObjectFormationError: fields attribute cannot exceed 10 items
                 fields=reduce(
-                    concat, zip(fields, padding_fields)
+                    concat,  # type: ignore[arg-type]
+                    zip(fields, padding_fields),
                 ),  # flatten pairwise (shifts+swaps side-by-side)
             ),
             SectionBlock(
