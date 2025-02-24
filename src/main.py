@@ -5,7 +5,7 @@ from datetime import datetime, date
 from functools import reduce
 from logging import Logger
 from operator import concat
-from typing import Callable
+from typing import Callable, Any
 from zoneinfo import ZoneInfo
 
 from lenses import lens
@@ -41,7 +41,7 @@ store_factory = StoreFactory.apply(Config())
 
 @app.middleware  # or app.use(log_request)
 def log_request(
-    logger: Logger, body: dict, next: Callable[[], BoltResponse]
+    logger: Logger, body: dict[str, Any], next: Callable[[], BoltResponse]
 ) -> BoltResponse:
     logger.debug(body)
     return next()
@@ -49,7 +49,7 @@ def log_request(
 
 @app.command("/oncall-list")
 def handle_list(
-    body: dict, ack: Ack, respond: Respond, client: WebClient, logger: Logger
+    body: dict[str, Any], ack: Ack, respond: Respond, client: WebClient, logger: Logger
 ) -> None:
     logger.info(body)
     ack()
@@ -111,7 +111,9 @@ def handle_list(
 
 
 @app.command("/oncall-create")
-def handle_oncall(body: dict, ack: Ack, client: WebClient, logger: Logger) -> None:
+def handle_oncall(
+    body: dict[str, Any], ack: Ack, client: WebClient, logger: Logger
+) -> None:
     logger.info(body)
     ack()
 
@@ -184,7 +186,7 @@ def handle_oncall(body: dict, ack: Ack, client: WebClient, logger: Logger) -> No
 
 
 @app.view("view-oncall-create")
-def view_submission(ack: Ack, body: dict, logger: Logger) -> None:
+def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
     ack()
     logger.info(f"{json.dumps(body)=}")
     values_focus = lens.Get("view").Get("state").Get("values")
@@ -244,7 +246,7 @@ def view_submission(ack: Ack, body: dict, logger: Logger) -> None:
 
 
 @app.event("app_mention")
-def ping_firefighter(body: dict, say: Say, logger: Logger):
+def ping_firefighter(body: dict[str, Any], say: Say, logger: Logger) -> None:
     oncall_svc = OncallService(store_factory)
     shift = oncall_svc.get_current_shift()
     logger.info(f"current {shift=}")
@@ -260,7 +262,7 @@ if __name__ == "__main__":
     # app.start(3000)
     # Create an app-level token with connections:write scope
     handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
-    handler.start()
+    handler.start()  # type:ignore[no-untyped-call]
 
 # pip install slack_bolt
 # export SLACK_SIGNING_SECRET=***

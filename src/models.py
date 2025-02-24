@@ -42,7 +42,7 @@ class Rotation(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         try:
             return uuid.UUID(self.id).int
         except ValueError:

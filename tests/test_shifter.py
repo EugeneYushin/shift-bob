@@ -4,7 +4,7 @@ import datetime as dt
 from shifter import BDayShifter
 
 
-def test_bdayshifter__should_skip_weekends():
+def test_bdayshifter__should_skip_weekends() -> None:
     shifter = BDayShifter(
         start_dt=dt.datetime(2024, 12, 30), end_dt=dt.datetime(2025, 1, 12)
     )
@@ -17,7 +17,7 @@ def test_bdayshifter__should_skip_weekends():
     ]
 
 
-def test_bdayshifter__should_start_on_first_bday_after_weekend():
+def test_bdayshifter__should_start_on_first_bday_after_weekend() -> None:
     shifter = BDayShifter(
         start_dt=dt.datetime(2025, 1, 4), end_dt=dt.datetime(2025, 1, 9)
     )

@@ -32,7 +32,7 @@ def rotations() -> list[Rotation]:
     ]
 
 
-def test_rotation__get_by_id(rotations: list[Rotation]):
+def test_rotation__get_by_id(rotations: list[Rotation]) -> None:
     store = InMemoryRotationStore()
     for r in rotations:
         store.create(r)
@@ -40,14 +40,14 @@ def test_rotation__get_by_id(rotations: list[Rotation]):
     assert store.get_by_id("id0") == rotations[0]
 
 
-def test_rotation__get_by_id__should_return_none_if_not_exists():
+def test_rotation__get_by_id__should_return_none_if_not_exists() -> None:
     store = InMemoryRotationStore()
     assert store.get_by_id("empty") is None
 
 
 def test_rotation__get_by_date__should_return_closest_rotation(
     rotations: list[Rotation],
-):
+) -> None:
     store = InMemoryRotationStore()
 
     for r in rotations:
@@ -56,6 +56,6 @@ def test_rotation__get_by_date__should_return_closest_rotation(
     assert store.get_by_date(datetime(2025, 1, 1)) == rotations[1]
 
 
-def test_rotation__get_by_date__should_return_none_if_not_exists():
+def test_rotation__get_by_date__should_return_none_if_not_exists() -> None:
     store = InMemoryRotationStore()
     assert store.get_by_date(datetime(2026, 1, 1)) is None
