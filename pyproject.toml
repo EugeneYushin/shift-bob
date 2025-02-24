@@ -32,4 +32,4 @@ pythonpath = [
 ignore_missing_imports = true
 warn_return_any = true
 warn_unused_ignores = true
-#strict = true
+strict = true

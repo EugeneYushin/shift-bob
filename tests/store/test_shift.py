@@ -64,7 +64,7 @@ def shifts() -> list[Shift]:
 )
 def test_shift__find(
     dt: datetime, expected_id: str, rotation: Rotation, shifts: list[Shift]
-):
+) -> None:
     store = InMemoryShiftStore(rotation)
 
     for s in shifts:
@@ -77,7 +77,7 @@ def test_shift__find(
 
 def test_shift__find__should_return_none_if_no_shift_exists(
     rotation: Rotation, shifts: list[Shift]
-):
+) -> None:
     store = InMemoryShiftStore(rotation)
     assert store.find(datetime(2024, 1, 12)) is None
 
@@ -95,7 +95,7 @@ def test_shift__find__should_return_none_if_no_shift_exists(
 )
 def test_shift__find__should_return_none_if_no_shifts_meet_conditions(
     dt: datetime, rotation: Rotation, shifts: list[Shift]
-):
+) -> None:
     store = InMemoryShiftStore(rotation)
     for s in shifts:
         store.create(s)
@@ -103,7 +103,9 @@ def test_shift__find__should_return_none_if_no_shifts_meet_conditions(
     assert store.find(dt) is None
 
 
-def test_shift__list__should_return_all_shifts(rotation: Rotation, shifts: list[Shift]):
+def test_shift__list__should_return_all_shifts(
+    rotation: Rotation, shifts: list[Shift]
+) -> None:
     store = InMemoryShiftStore(rotation)
     for s in shifts:
         store.create(s)
@@ -124,7 +126,7 @@ def test_shift__list__should_return_all_shifts(rotation: Rotation, shifts: list[
 )
 def test_shift__list__should_return_shifts_by_date(
     now: datetime, rotation: Rotation, shifts: list[Shift]
-):
+) -> None:
     store = InMemoryShiftStore(rotation)
     for s in shifts:
         store.create(s)
@@ -145,7 +147,9 @@ def test_shift__list__should_return_shifts_by_date(
     ]
 
 
-def test_shift__list__should_limit_shifts(rotation: Rotation, shifts: list[Shift]):
+def test_shift__list__should_limit_shifts(
+    rotation: Rotation, shifts: list[Shift]
+) -> None:
     store = InMemoryShiftStore(rotation)
     for s in shifts:
         store.create(s)
@@ -168,7 +172,7 @@ def test_shift__list__should_limit_shifts(rotation: Rotation, shifts: list[Shift
 
 def test_shift__list__should_return_shifts_by_date_with_limit(
     rotation: Rotation, shifts: list[Shift]
-):
+) -> None:
     store = InMemoryShiftStore(rotation)
     for s in shifts:
         store.create(s)

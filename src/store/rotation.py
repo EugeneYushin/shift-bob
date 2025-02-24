@@ -19,7 +19,7 @@ class RotationStore(ABC):
 
 
 class InMemoryRotationStore(RotationStore):
-    def __init__(self):
+    def __init__(self) -> None:
         self._rotations: dict[str, Rotation] = {}
 
     def create(self, rotation: Rotation) -> None:

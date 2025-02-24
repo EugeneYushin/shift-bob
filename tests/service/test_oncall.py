@@ -18,13 +18,13 @@ def rotation() -> Rotation:
     )
 
 
-def test_oncall_service__create_rotation(rotation: Rotation):
+def test_oncall_service__create_rotation(rotation: Rotation) -> None:
     svc = OncallService(InMemoryStoreFactory())
     shifts = svc.create_rotation(rotation)
     assert len(shifts) == 12
 
 
-def test_oncall_service__get_current_shift(rotation: Rotation):
+def test_oncall_service__get_current_shift(rotation: Rotation) -> None:
     svc = OncallService(InMemoryStoreFactory())
     svc.create_rotation(rotation)
 
@@ -38,7 +38,9 @@ def test_oncall_service__get_current_shift(rotation: Rotation):
     )
 
 
-def test_oncall_service__get_current_shift_returns_none_if_rotation_not_exists():
+def test_oncall_service__get_current_shift_returns_none_if_rotation_not_exists() -> (
+    None
+):
     svc = OncallService(InMemoryStoreFactory())
     assert svc.get_current_shift() is None
 
@@ -56,7 +58,7 @@ def test_oncall_service__get_current_shift_returns_none_if_rotation_not_exists()
 )
 def test_oncall_service__get_current_shift_returns_none_if_shift_not_exists(
     now: dt.datetime, rotation: Rotation
-):
+) -> None:
     svc = OncallService(InMemoryStoreFactory())
     svc.create_rotation(rotation)
 
@@ -68,7 +70,7 @@ def test_oncall_service__get_current_shift_returns_none_if_shift_not_exists(
     [dt.datetime(2025, 1, 1), dt.datetime(2025, 1, 2)],
     ids=["start-shift", "mid-shift"],
 )
-def test_oncall_service__get_shifts(now: dt.datetime, rotation: Rotation):
+def test_oncall_service__get_shifts(now: dt.datetime, rotation: Rotation) -> None:
     svc = OncallService(InMemoryStoreFactory())
     shifts = svc.create_rotation(rotation)
 
@@ -95,7 +97,7 @@ def test_oncall_service__get_shifts(now: dt.datetime, rotation: Rotation):
     ]
 
 
-def test_oncall_service__get_shifts_returns_empty_list_if_rotation_not_exists():
+def test_oncall_service__get_shifts_returns_empty_list_if_rotation_not_exists() -> None:
     svc = OncallService(InMemoryStoreFactory())
     assert svc.get_shifts(dt.datetime(2025, 1, 1)) == []
 
@@ -105,7 +107,7 @@ def test_oncall_service__get_shifts_returns_empty_list_if_rotation_not_exists():
 )
 def test_oncall_service__get_shifts_returns_empty_list_if_shift_not_exists(
     now: dt.datetime, rotation: Rotation
-):
+) -> None:
     svc = OncallService(InMemoryStoreFactory())
     svc.create_rotation(rotation)
 
