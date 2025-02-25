@@ -103,7 +103,6 @@ def handle_list(
                 block_id="list_tz",
                 # TODO format timezone (read it from rotation object)?!
                 text=f"Timezone: {tz}",
-                # text=MarkdownTextObject(),
             ),
         ],
         response_type="in_channel",
@@ -236,12 +235,6 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
 
     logger.info(f"{shifts[:5]=}")
 
-    # ephemeral / kwargs
-    # ack(
-    #     replace_original=False,
-    #     text=":white_check_mark: Done!",
-    # )
-
     ack(":white_check_mark: Done!", response_type="ephemeral")  # in_channel
 
 
@@ -263,8 +256,3 @@ if __name__ == "__main__":
     # Create an app-level token with connections:write scope
     handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
     handler.start()  # type:ignore[no-untyped-call]
-
-# pip install slack_bolt
-# export SLACK_SIGNING_SECRET=***
-# export SLACK_BOT_TOKEN=xoxb-***
-# python modals_app_typed.py
