@@ -2,7 +2,7 @@ import datetime as dt
 
 import pytest
 
-from models import Rotation, Schedule, Temporal, Shift
+from models import Rotation, Schedule, Shift, Temporal
 from service.oncall import OncallService
 from store.factory import InMemoryStoreFactory
 

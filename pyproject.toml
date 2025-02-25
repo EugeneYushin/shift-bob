@@ -33,3 +33,6 @@ ignore_missing_imports = true
 warn_return_any = true
 warn_unused_ignores = true
 strict = true
+
+[tool.lint.ruff]
+extend-select = ["I"]

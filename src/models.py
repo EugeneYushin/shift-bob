@@ -2,7 +2,7 @@ import datetime
 import uuid
 from enum import StrEnum, auto
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from config import Config
 

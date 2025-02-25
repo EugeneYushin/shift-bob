@@ -4,8 +4,8 @@ from typing import assert_never
 
 from config import Config, Impl
 from models import Rotation
-from store.rotation import RotationStore, InMemoryRotationStore
-from store.shift import ShiftStore, InMemoryShiftStore
+from store.rotation import InMemoryRotationStore, RotationStore
+from store.shift import InMemoryShiftStore, ShiftStore
 
 
 class StoreFactory:
