@@ -1,6 +1,6 @@
 import datetime
 import logging
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 from models import Rotation
 

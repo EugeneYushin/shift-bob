@@ -1,6 +1,6 @@
 import datetime
 import logging
-from itertools import pairwise, cycle
+from itertools import cycle, pairwise
 from zoneinfo import ZoneInfo
 
 from config import Config

@@ -1,5 +1,6 @@
-import pytest
 from datetime import datetime
+
+import pytest
 
 from models import Rotation, Schedule, Temporal
 from store.rotation import InMemoryRotationStore

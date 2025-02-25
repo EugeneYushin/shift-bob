@@ -1,7 +1,8 @@
-import pytest
 from datetime import datetime
 
-from models import Rotation, Schedule, Temporal, Shift
+import pytest
+
+from models import Rotation, Schedule, Shift, Temporal
 from store.shift import InMemoryShiftStore
 
 
