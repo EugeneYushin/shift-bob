@@ -5,7 +5,7 @@ from datetime import datetime, date
 from functools import reduce
 from logging import Logger
 from operator import concat
-from typing import Callable, Any
+from typing import Callable, Any, assert_never
 from zoneinfo import ZoneInfo
 
 from lenses import lens
@@ -26,15 +26,17 @@ from slack_sdk.models.blocks import (
 )
 from slack_sdk.models.views import View
 
-from config import Config
+from config import Config, SlackMode
 from models import Rotation, Schedule, Temporal
 from service.oncall import OncallService
 from store.factory import StoreFactory
 
 logging.basicConfig(level=logging.INFO)
 
-
-app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
+app = App(
+    token=os.environ.get("SLACK_BOT_TOKEN"),
+    signing_secret=os.environ.get("SLACK_SIGNING_SECRET"),
+)
 
 store_factory = StoreFactory.apply(Config())
 
@@ -252,7 +254,13 @@ def ping_firefighter(body: dict[str, Any], say: Say, logger: Logger) -> None:
 
 
 if __name__ == "__main__":
-    # app.start(3000)
     # Create an app-level token with connections:write scope
-    handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
-    handler.start()  # type:ignore[no-untyped-call]
+    cfg = Config()
+    match cfg.mode:
+        case SlackMode.http:
+            app.start(port=int(os.environ.get("PORT", cfg.port)))
+        case SlackMode.socket:
+            handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+            handler.start()  # type:ignore[no-untyped-call]
+        case default:
+            assert_never(default)
