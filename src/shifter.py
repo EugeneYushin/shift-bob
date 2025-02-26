@@ -4,9 +4,6 @@ from typing import Type, assert_never
 
 import pandas as pd
 from pandas import DatetimeIndex
-from pandas._libs.tslibs import (
-    BaseOffset,
-)  # TODO str, Timedelta, datetime.timedelta, or DateOffset
 from pydantic import BaseModel
 
 from models import Temporal
@@ -35,7 +32,7 @@ class Shifter(BaseModel, ABC):
 
 
 class BaseShifter(Shifter):
-    offset: Type[BaseOffset]
+    offset: Type[pd.offsets.BaseOffset]
 
     def get_index(self, freq: int) -> DatetimeIndex:
         return pd.date_range(
@@ -44,12 +41,12 @@ class BaseShifter(Shifter):
 
 
 class DailyShifter(BaseShifter):
-    offset: Type[BaseOffset] = pd.offsets.Day
+    offset: Type[pd.offsets.BaseOffset] = pd.offsets.Day
 
 
 class BDayShifter(BaseShifter):
-    offset: Type[BaseOffset] = pd.offsets.BDay
+    offset: Type[pd.offsets.BaseOffset] = pd.offsets.BDay
 
 
 class WeeklyShifter(BaseShifter):
-    offset: Type[BaseOffset] = pd.offsets.Week
+    offset: Type[pd.offsets.BaseOffset] = pd.offsets.Week
