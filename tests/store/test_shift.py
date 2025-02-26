@@ -47,9 +47,6 @@ def shifts() -> list[Shift]:
     ]
 
 
-# TODO add tests to create a shift starting on weekend
-
-
 @pytest.mark.parametrize(
     ["dt", "expected_id"],
     [
