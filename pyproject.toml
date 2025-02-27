@@ -12,6 +12,7 @@ pandas = "^2.2.3"
 slack-bolt = "^1.22.0"
 pydantic = "^2.10.6"
 lenses = "^1.2.0"
+sqlmodel = "^0.0.22"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

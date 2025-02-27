@@ -49,6 +49,7 @@ def log_request(
     return next()
 
 
+# TODO use single slash-command `oncall` to dispatch subcommands (list, create, ...)
 @app.command("/oncall-list")
 def handle_list(
     body: dict[str, Any], ack: Ack, respond: Respond, client: WebClient, logger: Logger
@@ -245,6 +246,7 @@ def ping_firefighter(body: dict[str, Any], say: Say, logger: Logger) -> None:
     oncall_svc = OncallService(store_factory)
     shift = oncall_svc.get_current_shift()
     logger.info(f"current {shift=}")
+    # TODO hint the future rotation/shifts if any
     if shift is None:
         say(":poop: No shifts are set!", thread_ts=body["event"]["ts"])
         return
