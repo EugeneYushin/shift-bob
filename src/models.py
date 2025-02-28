@@ -19,11 +19,16 @@ class Schedule(SQLModel):
     temporal: Temporal
 
 
-class Shift(SQLModel, table=True):
+class Shift(SQLModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     firefighter: str
     start_date: datetime.datetime
     end_date: datetime.datetime
+
+
+class ShiftORM(Shift, table=True):
+    rotation_id: str = Field(foreign_key="rotationorm.id")
+    # rotation: "RotationORM" = Relationship(back_populates="shifts")
 
 
 class Rotation(SQLModel):
@@ -56,4 +61,5 @@ class RotationORM(Rotation, table=True):
     https://sqlmodel.tiangolo.com/tutorial/fastapi/multiple-models/#the-herocreate-data-model
     """
 
+    # shifts: list[ShiftORM] = Relationship(back_populates="rotation")
     pass
