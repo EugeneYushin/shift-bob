@@ -24,6 +24,7 @@ class ShiftStore(abc.ABC):
     def create(self, shift: Shift) -> None: ...
 
     @abstractmethod
+    # TODO check/remove if not used
     def update(self, shift: Shift, new_shift: Shift) -> None: ...
 
 
