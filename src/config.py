@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class Impl(StrEnum):
     mem = auto()
-    # TODO add SQL
+    sql = auto()
 
 
 class SlackMode(StrEnum):

@@ -12,6 +12,7 @@ class RotationStore(ABC):
     def get_by_id(self, id: str) -> Rotation | None: ...
 
     @abstractmethod
+    # TODO unify naming with ShiftStore, ie get_by_date vs find
     def get_by_date(self, dt: datetime.datetime) -> Rotation | None: ...
 
     @abstractmethod
