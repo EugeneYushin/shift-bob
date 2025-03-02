@@ -20,6 +20,6 @@ class SQLConfing(BaseModel):
 class Config(BaseModel):
     mode: SlackMode = SlackMode.socket
     port: int = 3000
-    impl: Impl = Impl.mem
+    impl: Impl = Impl.sql
     sql: SQLConfing | None = SQLConfing(url="sqlite:///:memory:")
     timezone: str = "America/New_York"
