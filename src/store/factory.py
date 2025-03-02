@@ -6,10 +6,12 @@ from sqlalchemy import Engine
 
 from config import Config, Impl
 from models import Rotation
-from store.rotation import InMemoryRotationStore, RotationStore
+from store.rotation import RotationStore
+from store.rotation_mem import InMemoryRotationStore
 from store.rotation_sql import SQLAlchemyRotationStore
 from store.sa import global_engine
-from store.shift import InMemoryShiftStore, ShiftStore
+from store.shift import ShiftStore
+from store.shift_mem import InMemoryShiftStore
 from store.shift_sql import SQLAlchemyShiftStore
 
 

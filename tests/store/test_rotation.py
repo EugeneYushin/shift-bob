@@ -4,7 +4,8 @@ from typing import Generator
 import pytest
 
 from models import Rotation, Schedule, Temporal
-from store.rotation import InMemoryRotationStore, RotationStore
+from store.rotation import RotationStore
+from store.rotation_mem import InMemoryRotationStore
 from store.rotation_sql import SQLAlchemyRotationStore
 from tests.conftest import engine
 
