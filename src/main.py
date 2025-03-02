@@ -223,6 +223,7 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
     )
     start_time_focus = lens["start_end_block"]["start_time_select"]
     start_time = body & (values_focus & start_time_focus & lens["selected_time"]).get()
+    # TODO set default TZ from config if not passed
     start_time_tz = body & (values_focus & start_time_focus & lens["timezone"]).get()
 
     rotation = Rotation(

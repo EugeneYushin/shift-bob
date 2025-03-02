@@ -31,7 +31,7 @@ class SQLAlchemyShiftStore(ShiftStore):
         if dt_from:
             stmt = stmt.where(ShiftORM.start_date > dt_from)
         if limit:
-            stmt.limit(limit)
+            stmt = stmt.limit(limit)
 
         with Session(self._engine) as session:
             result = session.exec(stmt).all()
