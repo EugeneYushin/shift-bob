@@ -5,7 +5,8 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 
 from models import Rotation, Schedule, Shift, Temporal
-from store.shift import InMemoryShiftStore, ShiftStore
+from store.shift import ShiftStore
+from store.shift_mem import InMemoryShiftStore
 from store.shift_sql import SQLAlchemyShiftStore
 from tests.conftest import engine
 
