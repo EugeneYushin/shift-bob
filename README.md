@@ -10,3 +10,10 @@ ngrok http 3000
 ```
 
 Slack docs: [Exploring HTTP vs Socket Mode](https://api.slack.com/apis/event-delivery)
+
+
+### docker
+Make sure you have correct Slack tokens set in `.env` (check `.env.example` for references).
+```shell
+docker-compose up
+```
