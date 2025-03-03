@@ -1,0 +1,14 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build'
+    args:
+      - build
+      - -t
+      - ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/dev2lz/shift-bob:latest
+      - .
+    env:
+      - 'DOCKER_BUILDKIT=1'
+images:
+  - ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/dev2lz/shift-bob:latest
+options:
+    logging: CLOUD_LOGGING_ONLY

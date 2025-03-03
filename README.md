@@ -17,3 +17,10 @@ Make sure you have correct Slack tokens set in `.env` (check `.env.example` for 
 ```shell
 docker-compose up
 ```
+
+### gcp
+`dev2lz` repository should exist in your project/region before running build command.
+```shell
+# build docker image in GCP
+make gcp-build
+```
