@@ -41,6 +41,16 @@ app = App(
 store_factory = StoreFactory.apply(Config())
 
 
+def match_ls(command: dict[str, Any]) -> bool:
+    # available args
+    # https://github.com/slackapi/bolt-python/blob/1a863715fdace5e59ef4e11b1ad606194e8a1c38/slack_bolt/kwargs_injection/utils.py#L21
+    return str(command.get("text", "")) == "ls"
+
+
+def match_create(command: dict[str, Any]) -> bool:
+    return str(command.get("text", "")) == "create"
+
+
 @app.middleware  # or app.use(log_request)
 def log_request(
     logger: Logger, body: dict[str, Any], next: Callable[[], BoltResponse]
@@ -49,8 +59,7 @@ def log_request(
     return next()
 
 
-# TODO use single slash-command `oncall` to dispatch subcommands (list, create, ...)
-@app.command("/oncall-list")
+@app.command("/oncall", matchers=[match_ls])
 def handle_list(
     body: dict[str, Any], ack: Ack, respond: Respond, client: WebClient, logger: Logger
 ) -> None:
@@ -112,7 +121,7 @@ def handle_list(
     )
 
 
-@app.command("/oncall-create")
+@app.command("/oncall", matchers=[match_create])
 def handle_oncall(
     body: dict[str, Any], ack: Ack, client: WebClient, logger: Logger
 ) -> None:
