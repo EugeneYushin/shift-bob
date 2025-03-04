@@ -122,7 +122,7 @@ def handle_list(
 
 
 @app.command("/oncall", matchers=[match_create])
-def handle_oncall(
+def handle_create(
     body: dict[str, Any], ack: Ack, client: WebClient, logger: Logger
 ) -> None:
     logger.info(body)
@@ -175,6 +175,7 @@ def handle_oncall(
                 ),
                 ActionsBlock(
                     block_id="start_end_block",
+                    # use DatePickerElement + TimePickerElement over DateTimePickerElement for better UI alignment
                     elements=[
                         DatePickerElement(
                             action_id="start_date_select",
@@ -185,10 +186,6 @@ def handle_oncall(
                             initial_time="09:00",
                             timezone=Config().timezone,
                         ),
-                        # DateTimePickerElement(
-                        #     action_id="start_date_select",
-                        #     initial_date_time=int(datetime.datetime.now().timestamp()),
-                        # )
                     ],
                 ),
             ],
@@ -238,9 +235,11 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
     rotation = Rotation(
         schedule=Schedule(each=each, temporal=temporal),
         fighters=users,
+        # TODO if start/end dates are timezone-aware, timezone field looks redundant
         start_date=datetime.fromisoformat(f"{start_date}T{start_time}").replace(
             tzinfo=ZoneInfo(start_time_tz)
         ),
+        timezone=start_time_tz,
     )
 
     oncall_svc = OncallService(store_factory)

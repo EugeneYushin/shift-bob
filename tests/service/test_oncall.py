@@ -1,4 +1,5 @@
 import datetime as dt
+from datetime import timezone
 
 import pytest
 
@@ -15,6 +16,17 @@ def rotation() -> Rotation:
         fighters=["f1", "f2", "f3"],
         start_date=dt.datetime(2024, 12, 30),
         end_date=dt.datetime(2025, 1, 31),
+    )
+
+
+@pytest.fixture()
+def rotation_utc() -> Rotation:
+    return Rotation(
+        id="id0",
+        schedule=Schedule(each=2, temporal=Temporal.bday),
+        fighters=["f1", "f2", "f3"],
+        start_date=dt.datetime(2024, 12, 30, tzinfo=timezone.utc),
+        end_date=dt.datetime(2025, 1, 31, tzinfo=timezone.utc),
     )
 
 
@@ -112,3 +124,13 @@ def test_oncall_service__get_shifts_returns_empty_list_if_shift_not_exists(
     svc.create_rotation(rotation)
 
     assert svc.get_shifts(now) == []
+
+
+def test_oncall_service__get_shifts_returns_timezone_aware_shifts(
+    rotation_utc: Rotation,
+) -> None:
+    svc = OncallService(InMemoryStoreFactory())
+    svc.create_rotation(rotation_utc)
+    now = dt.datetime(2025, 1, 1, tzinfo=timezone.utc)
+
+    assert svc.get_shifts(now)[0].start_date.tzinfo == timezone.utc

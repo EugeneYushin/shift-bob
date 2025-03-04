@@ -72,4 +72,7 @@ class OncallService:
 
         next_shifts = shifts_store.list(now, limit=limit - 1)
 
-        return [current_shift, *next_shifts]
+        shifts_all = [current_shift, *next_shifts]
+        # SQLite doesn't persist timezone (should be passed as timezone formatted str vs datetime object)
+        # TODO review if we need to compensate timezone for backends other than SQLite
+        return shifts_all
