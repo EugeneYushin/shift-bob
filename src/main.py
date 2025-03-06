@@ -269,8 +269,9 @@ if __name__ == "__main__":
     cfg = Config()
     match cfg.mode:
         case SlackMode.http:
-            app.start(port=int(os.environ.get("PORT", cfg.port)))
+            app.start(port=cfg.port)
         case SlackMode.socket:
+            # TODO put tokens into config
             handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
             handler.start()  # type:ignore[no-untyped-call]
         case default:
