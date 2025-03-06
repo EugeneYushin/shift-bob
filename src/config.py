@@ -24,6 +24,6 @@ class Config(BaseSettings):
     impl: Impl = Impl.sql
     sql: SQLConfing | None = SQLConfing(url="sqlite:///:memory:")
     # timezone: str = "America/New_York"
-    timezone: str = "UTC"
+    timezone: str = "UTC"  # TODO UTC is depicted as "Time zone: Monrovia, Reykjavik" in Slack time-picker
 
     model_config = SettingsConfigDict(env_prefix="BOB_", env_nested_delimiter="__")

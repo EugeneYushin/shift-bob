@@ -6,8 +6,8 @@ from functools import reduce
 from logging import Logger
 from operator import concat
 from typing import Any, Callable, assert_never
-from zoneinfo import ZoneInfo
 
+import pytz
 from lenses import lens
 from slack_bolt import Ack, App, BoltResponse, Respond, Say
 from slack_bolt.adapter.socket_mode import SocketModeHandler
@@ -77,16 +77,21 @@ def handle_list(
     current_shift = shifts[0]
     firefighter = current_shift.firefighter
 
+    # TODO read timezone from rotation object?!
+    tz = Config().timezone
+
     # headers = [MarkdownTextObject(text="*Shifts:*"), MarkdownTextObject(text="*Swaps:*")]
     fields = [
+        # TODO adjust to respect timezone
         MarkdownTextObject(
-            text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M')}` <@{s.firefighter}>"
+            # text=f"`{s.start_date.astimezone(ZoneInfo(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
+            # text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
+            text=f"`{pytz.utc.localize(s.start_date).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
         )
         for s in shifts
     ]
     # TODO pad with swaps
     padding_fields = [MarkdownTextObject(text=" ") for _ in shifts]
-    tz = current_shift.start_date.tzname()
 
     respond(
         blocks=[
@@ -113,7 +118,7 @@ def handle_list(
             ),
             SectionBlock(
                 block_id="list_tz",
-                # TODO format timezone (read it from rotation object)?!
+                # TODO format timezone
                 text=f"Timezone: {tz}",
             ),
         ],
@@ -236,9 +241,10 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
         schedule=Schedule(each=each, temporal=temporal),
         fighters=users,
         # TODO if start/end dates are timezone-aware, timezone field looks redundant
-        start_date=datetime.fromisoformat(f"{start_date}T{start_time}").replace(
-            tzinfo=ZoneInfo(start_time_tz)
-        ),
+        # start_date=datetime.fromisoformat(f"{start_date}T{start_time}").replace(
+        #     tzinfo=ZoneInfo(start_time_tz)
+        # ),
+        start_date=datetime.fromisoformat(f"{start_date}T{start_time}"),
         timezone=start_time_tz,
     )
 
