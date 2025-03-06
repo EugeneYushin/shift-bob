@@ -22,4 +22,5 @@ class Config(BaseModel):
     port: int = 3000
     impl: Impl = Impl.sql
     sql: SQLConfing | None = SQLConfing(url="sqlite:///:memory:")
-    timezone: str = "America/New_York"
+    # timezone: str = "America/New_York"
+    timezone: str = "UTC"

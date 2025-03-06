@@ -42,6 +42,8 @@ class Rotation(SQLModel):
         default_factory=lambda data: data["start_date"] + datetime.timedelta(days=365)  # type:ignore[misc,arg-type]
     )
     timezone: str = Field(default_factory=lambda: Config().timezone)
+    # TODO BaseTzInfo?
+    # timezone: BaseTzInfo = Field(default_factory=lambda: timezone(Config().timezone), sa_type=String)
 
     def __hash__(self) -> int:
         try:

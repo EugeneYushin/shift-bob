@@ -3,6 +3,8 @@ import logging
 from itertools import cycle, pairwise
 from zoneinfo import ZoneInfo
 
+import pytz
+
 from config import Config
 from models import Rotation, Shift
 from shifter import Shifter
@@ -16,7 +18,23 @@ class OncallService:
         self.store_factory = store_factory
 
     def create_rotation(self, rotation: Rotation) -> list[Shift]:
+        """
+        Create rotation with all shifts between start and end dates (1 year by default).
+        All dates are converted from user specific timezone and stored in UTC.
+        """
         logger.debug(f"create {rotation=}")
+        rotation = rotation.model_copy()
+        tz = pytz.timezone(rotation.timezone)
+
+        # set timezone with localize, it doesn't change date/time parts (just adds tz info)
+        # and then convert to UTC, ie
+        # 06:00:00, EST-0500 -> 06:00:00 EST-0500 -> 12:00:00 CET+0100
+        rotation.start_date = tz.localize(rotation.start_date).astimezone(
+            datetime.timezone.utc
+        )
+        rotation.end_date = tz.localize(rotation.end_date).astimezone(
+            datetime.timezone.utc
+        )
         self.store_factory.rotation().create(rotation)
 
         # create all shifts
@@ -45,13 +63,14 @@ class OncallService:
 
     def get_current_shift(self, now: datetime.datetime | None = None) -> Shift | None:
         if now is None:
-            now = datetime.datetime.now(tz=ZoneInfo(Config().timezone))
+            now = datetime.datetime.now(tz=datetime.timezone.utc)
 
-        rotation = self.store_factory.rotation().get_by_date(now)
+        utc_now = now.astimezone(datetime.timezone.utc)
+        rotation = self.store_factory.rotation().get_by_date(utc_now)
         if rotation is None:
             return None
 
-        return self.store_factory.shifts(rotation).find(now)
+        return self.store_factory.shifts(rotation).find(utc_now)
 
     def get_shifts(
         self, now: datetime.datetime | None = None, limit: int = 5
@@ -60,17 +79,19 @@ class OncallService:
         if now is None:
             now = datetime.datetime.now(tz=ZoneInfo(Config().timezone))
 
-        rotation = self.store_factory.rotation().get_by_date(now)
+        utc_now = now.astimezone(datetime.timezone.utc)
+
+        rotation = self.store_factory.rotation().get_by_date(utc_now)
         if rotation is None:
             return []
 
         shifts_store = self.store_factory.shifts(rotation)
         # TODO should we add current shift to the list or next shifts only?
-        current_shift = shifts_store.find(now)
+        current_shift = shifts_store.find(utc_now)
         if current_shift is None:
             return []
 
-        next_shifts = shifts_store.list(now, limit=limit - 1)
+        next_shifts = shifts_store.list(utc_now, limit=limit - 1)
 
         shifts_all = [current_shift, *next_shifts]
         # SQLite doesn't persist timezone (should be passed as timezone formatted str vs datetime object)
