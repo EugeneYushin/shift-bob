@@ -255,6 +255,7 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
 
     logger.info(f"{shifts[:5]=}")
 
+    # TODO handle list to show the shifts on completion
     ack(":white_check_mark: Done!", response_type="ephemeral")  # in_channel
 
 
