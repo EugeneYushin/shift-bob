@@ -82,13 +82,8 @@ def handle_list(
 
     # headers = [MarkdownTextObject(text="*Shifts:*"), MarkdownTextObject(text="*Swaps:*")]
     fields = [
-        # TODO adjust to respect timezone
         MarkdownTextObject(
-            # text=f"`{s.start_date.astimezone(ZoneInfo(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
-            # text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
-            # text=f"`{pytz.utc.localize(s.start_date).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
-            text=f"`{pytz.utc.localize(s.start_date, is_dst=True).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
-            # text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
+            text=f"`{pytz.utc.localize(s.start_date).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
         )
         for s in shifts
     ]
@@ -170,14 +165,22 @@ def handle_create(
                         StaticSelectElement(
                             action_id="schedule_temporal_select",
                             options=[
-                                Option(text=PlainTextObject(text="days"), value=Temporal.day),
-                                Option(text=PlainTextObject(text="business days"), value=Temporal.bday),
                                 Option(
-                                    text=PlainTextObject(text="weeks"), value=Temporal.week,
+                                    text=PlainTextObject(text="days"),
+                                    value=Temporal.day,
+                                ),
+                                Option(
+                                    text=PlainTextObject(text="business days"),
+                                    value=Temporal.bday,
+                                ),
+                                Option(
+                                    text=PlainTextObject(text="weeks"),
+                                    value=Temporal.week,
                                 ),
                             ],
                             initial_option=Option(
-                                text=PlainTextObject(text="business days"), value=Temporal.bday
+                                text=PlainTextObject(text="business days"),
+                                value=Temporal.bday,
                             ),
                         ),
                     ],
