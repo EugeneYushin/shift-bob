@@ -64,9 +64,9 @@ class OncallService:
 
     def get_current_shift(self, now: datetime.datetime | None = None) -> Shift | None:
         if now is None:
-            now = datetime.datetime.now(tz=datetime.timezone.utc)
+            now = datetime.datetime.now(tz=UTC)
 
-        utc_now = now.astimezone(datetime.timezone.utc)
+        utc_now = now.astimezone(UTC)
         rotation = self.store_factory.rotation().get_by_date(utc_now)
         if rotation is None:
             return None
@@ -80,7 +80,7 @@ class OncallService:
         if now is None:
             now = datetime.datetime.now(tz=ZoneInfo(Config().timezone))
 
-        utc_now = now.astimezone(datetime.timezone.utc)
+        utc_now = now.astimezone(UTC)
 
         rotation = self.store_factory.rotation().get_by_date(utc_now)
         if rotation is None:

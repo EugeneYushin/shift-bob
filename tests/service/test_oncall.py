@@ -44,20 +44,20 @@ def test_oncall_service__create_rotation_with_timezone() -> None:
         Shift(
             id=shifts[0].id,
             firefighter="f1",
-            start_date=dt.datetime(2025, 1, 1, 14, tzinfo=dt.timezone.utc),
-            end_date=dt.datetime(2025, 1, 2, 14, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 1, 1, 14, tzinfo=dt.UTC),
+            end_date=dt.datetime(2025, 1, 2, 14, tzinfo=dt.UTC),
         ),
         Shift(
             id=shifts[1].id,
             firefighter="f2",
-            start_date=dt.datetime(2025, 1, 2, 14, tzinfo=dt.timezone.utc),
-            end_date=dt.datetime(2025, 1, 3, 14, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 1, 2, 14, tzinfo=dt.UTC),
+            end_date=dt.datetime(2025, 1, 3, 14, tzinfo=dt.UTC),
         ),
         Shift(
             id=shifts[2].id,
             firefighter="f3",
-            start_date=dt.datetime(2025, 1, 3, 14, tzinfo=dt.timezone.utc),
-            end_date=dt.datetime(2025, 1, 4, 14, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 1, 3, 14, tzinfo=dt.UTC),
+            end_date=dt.datetime(2025, 1, 4, 14, tzinfo=dt.UTC),
         ),
     ]
 
@@ -81,15 +81,15 @@ def test_oncall_service__create_rotation_with_timezone_over_dst() -> None:
         Shift(
             id=shifts[0].id,
             firefighter="f1",
-            start_date=dt.datetime(2025, 3, 8, 14, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 3, 8, 14, tzinfo=dt.UTC),
             # UTC is shifted from 14 to 13 with respect to EST->EDT shift
-            end_date=dt.datetime(2025, 3, 10, 13, tzinfo=dt.timezone.utc),
+            end_date=dt.datetime(2025, 3, 10, 13, tzinfo=dt.UTC),
         ),
         Shift(
             id=shifts[1].id,
             firefighter="f2",
-            start_date=dt.datetime(2025, 3, 10, 13, tzinfo=dt.timezone.utc),
-            end_date=dt.datetime(2025, 3, 12, 13, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 3, 10, 13, tzinfo=dt.UTC),
+            end_date=dt.datetime(2025, 3, 12, 13, tzinfo=dt.UTC),
         ),
     ]
 
@@ -98,20 +98,18 @@ def test_oncall_service__get_current_shift(rotation: Rotation) -> None:
     svc = OncallService(InMemoryStoreFactory())
     svc.create_rotation(rotation)
 
-    actual_shift = svc.get_current_shift(
-        dt.datetime(2024, 12, 31, tzinfo=dt.timezone.utc)
-    )
+    actual_shift = svc.get_current_shift(dt.datetime(2024, 12, 31, tzinfo=dt.UTC))
     assert actual_shift
     assert actual_shift == Shift(
         id=actual_shift.id,
         firefighter="f1",
-        start_date=dt.datetime(2024, 12, 30, tzinfo=dt.timezone.utc),
-        end_date=dt.datetime(2025, 1, 1, tzinfo=dt.timezone.utc),
+        start_date=dt.datetime(2024, 12, 30, tzinfo=dt.UTC),
+        end_date=dt.datetime(2025, 1, 1, tzinfo=dt.UTC),
     )
 
 
 def test_oncall_service__get_current_shift_with_timezone() -> None:
-    utc_dt = dt.datetime(2025, 1, 2, tzinfo=dt.timezone.utc)  # 2025, 1, 2, 0, 0
+    utc_dt = dt.datetime(2025, 1, 2, tzinfo=dt.UTC)  # 2025, 1, 2, 0, 0
     etc_dt = utc_dt.astimezone(tz=ZoneInfo("America/New_York"))  # 2025, 1, 1, 19, 0
 
     rotation = Rotation(
@@ -147,8 +145,8 @@ def test_oncall_service__get_current_shift_returns_none_if_rotation_not_exists()
 @pytest.mark.parametrize(
     "now",
     [
-        dt.datetime(1970, 1, 1, tzinfo=dt.timezone.utc),
-        dt.datetime(2099, 1, 1, tzinfo=dt.timezone.utc),
+        dt.datetime(1970, 1, 1, tzinfo=dt.UTC),
+        dt.datetime(2099, 1, 1, tzinfo=dt.UTC),
     ],
     ids=[
         "now-in-past",
@@ -167,8 +165,8 @@ def test_oncall_service__get_current_shift_returns_none_if_shift_not_exists(
 @pytest.mark.parametrize(
     "now",
     [
-        dt.datetime(2025, 1, 1, tzinfo=dt.timezone.utc),
-        dt.datetime(2025, 1, 2, tzinfo=dt.timezone.utc),
+        dt.datetime(2025, 1, 1, tzinfo=dt.UTC),
+        dt.datetime(2025, 1, 2, tzinfo=dt.UTC),
     ],
     ids=["start-shift", "mid-shift"],
 )
@@ -181,34 +179,34 @@ def test_oncall_service__get_shifts(now: dt.datetime, rotation: Rotation) -> Non
         Shift(
             id=shifts[1].id,
             firefighter="f2",
-            start_date=dt.datetime(2025, 1, 1, 0, tzinfo=dt.timezone.utc),
-            end_date=dt.datetime(2025, 1, 3, 0, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 1, 1, 0, tzinfo=dt.UTC),
+            end_date=dt.datetime(2025, 1, 3, 0, tzinfo=dt.UTC),
         ),
         Shift(
             id=shifts[2].id,
             firefighter="f3",
-            start_date=dt.datetime(2025, 1, 3, 0, tzinfo=dt.timezone.utc),
-            end_date=dt.datetime(2025, 1, 7, 0, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 1, 3, 0, tzinfo=dt.UTC),
+            end_date=dt.datetime(2025, 1, 7, 0, tzinfo=dt.UTC),
         ),
         Shift(
             id=shifts[3].id,
             firefighter="f1",
-            start_date=dt.datetime(2025, 1, 7, 0, tzinfo=dt.timezone.utc),
-            end_date=dt.datetime(2025, 1, 9, 0, tzinfo=dt.timezone.utc),
+            start_date=dt.datetime(2025, 1, 7, 0, tzinfo=dt.UTC),
+            end_date=dt.datetime(2025, 1, 9, 0, tzinfo=dt.UTC),
         ),
     ]
 
 
 def test_oncall_service__get_shifts_returns_empty_list_if_rotation_not_exists() -> None:
     svc = OncallService(InMemoryStoreFactory())
-    assert svc.get_shifts(dt.datetime(2025, 1, 1, tzinfo=dt.timezone.utc)) == []
+    assert svc.get_shifts(dt.datetime(2025, 1, 1, tzinfo=dt.UTC)) == []
 
 
 @pytest.mark.parametrize(
     "now",
     [
-        dt.datetime(1990, 1, 1, tzinfo=dt.timezone.utc),
-        dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+        dt.datetime(1990, 1, 1, tzinfo=dt.UTC),
+        dt.datetime(2026, 1, 1, tzinfo=dt.UTC),
     ],
     ids=["past", "future"],
 )
