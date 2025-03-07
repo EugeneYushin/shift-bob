@@ -6,8 +6,8 @@ from functools import reduce
 from logging import Logger
 from operator import concat
 from typing import Any, Callable, assert_never
-from zoneinfo import ZoneInfo
 
+import pytz
 from lenses import lens
 from slack_bolt import Ack, App, BoltResponse, Respond, Say
 from slack_bolt.adapter.socket_mode import SocketModeHandler
@@ -77,16 +77,18 @@ def handle_list(
     current_shift = shifts[0]
     firefighter = current_shift.firefighter
 
+    # TODO read timezone from rotation object?!
+    tz = Config().timezone
+
     # headers = [MarkdownTextObject(text="*Shifts:*"), MarkdownTextObject(text="*Swaps:*")]
     fields = [
         MarkdownTextObject(
-            text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M')}` <@{s.firefighter}>"
+            text=f"`{pytz.utc.localize(s.start_date).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
         )
         for s in shifts
     ]
     # TODO pad with swaps
     padding_fields = [MarkdownTextObject(text=" ") for _ in shifts]
-    tz = current_shift.start_date.tzname()
 
     respond(
         blocks=[
@@ -113,7 +115,7 @@ def handle_list(
             ),
             SectionBlock(
                 block_id="list_tz",
-                # TODO format timezone (read it from rotation object)?!
+                # TODO format timezone
                 text=f"Timezone: {tz}",
             ),
         ],
@@ -122,7 +124,7 @@ def handle_list(
 
 
 @app.command("/oncall", matchers=[match_create])
-def handle_oncall(
+def handle_create(
     body: dict[str, Any], ack: Ack, client: WebClient, logger: Logger
 ) -> None:
     logger.info(body)
@@ -163,20 +165,29 @@ def handle_oncall(
                         StaticSelectElement(
                             action_id="schedule_temporal_select",
                             options=[
-                                Option(text=PlainTextObject(text="days"), value=Temporal.day),
-                                Option(text=PlainTextObject(text="business days"), value=Temporal.bday),
                                 Option(
-                                    text=PlainTextObject(text="weeks"), value=Temporal.week,
+                                    text=PlainTextObject(text="days"),
+                                    value=Temporal.day,
+                                ),
+                                Option(
+                                    text=PlainTextObject(text="business days"),
+                                    value=Temporal.bday,
+                                ),
+                                Option(
+                                    text=PlainTextObject(text="weeks"),
+                                    value=Temporal.week,
                                 ),
                             ],
                             initial_option=Option(
-                                text=PlainTextObject(text="business days"), value=Temporal.bday
+                                text=PlainTextObject(text="business days"),
+                                value=Temporal.bday,
                             ),
                         ),
                     ],
                 ),
                 ActionsBlock(
                     block_id="start_end_block",
+                    # use DatePickerElement + TimePickerElement over DateTimePickerElement for better UI alignment
                     elements=[
                         DatePickerElement(
                             action_id="start_date_select",
@@ -187,10 +198,6 @@ def handle_oncall(
                             initial_time="09:00",
                             timezone=Config().timezone,
                         ),
-                        # DateTimePickerElement(
-                        #     action_id="start_date_select",
-                        #     initial_date_time=int(datetime.datetime.now().timestamp()),
-                        # )
                     ],
                 ),
             ],
@@ -240,9 +247,12 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
     rotation = Rotation(
         schedule=Schedule(each=each, temporal=temporal),
         fighters=users,
-        start_date=datetime.fromisoformat(f"{start_date}T{start_time}").replace(
-            tzinfo=ZoneInfo(start_time_tz)
-        ),
+        # TODO if start/end dates are timezone-aware, timezone field looks redundant
+        # start_date=datetime.fromisoformat(f"{start_date}T{start_time}").replace(
+        #     tzinfo=ZoneInfo(start_time_tz)
+        # ),
+        start_date=datetime.fromisoformat(f"{start_date}T{start_time}"),
+        timezone=start_time_tz,
     )
 
     oncall_svc = OncallService(store_factory)
@@ -250,6 +260,7 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
 
     logger.info(f"{shifts[:5]=}")
 
+    # TODO handle list to show the shifts on completion
     ack(":white_check_mark: Done!", response_type="ephemeral")  # in_channel
 
 

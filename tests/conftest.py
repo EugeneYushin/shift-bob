@@ -5,10 +5,12 @@ from sqlmodel import create_engine, SQLModel
 
 from store.sa import json_serializer
 
-engine = create_engine("sqlite:///:memory:", json_serializer=json_serializer, echo=True)
+engine = create_engine(
+    "sqlite:///:memory:", json_serializer=json_serializer, echo=False
+)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
 def clear_sqlmodel() -> Generator[None, None, None]:
     # we might need to import db models first, eg:
     # from models import RotationORM, ShiftORM
