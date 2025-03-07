@@ -86,7 +86,9 @@ def handle_list(
         MarkdownTextObject(
             # text=f"`{s.start_date.astimezone(ZoneInfo(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
             # text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
-            text=f"`{pytz.utc.localize(s.start_date).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
+            # text=f"`{pytz.utc.localize(s.start_date).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
+            text=f"`{pytz.utc.localize(s.start_date, is_dst=True).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
+            # text=f"`{s.start_date.strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
         )
         for s in shifts
     ]

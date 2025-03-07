@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 
 import pytz
 
+from datetime import UTC
 from config import Config
 from models import Rotation, Shift
 from shifter import Shifter
@@ -26,24 +27,24 @@ class OncallService:
         rotation = rotation.model_copy()
         tz = pytz.timezone(rotation.timezone)
 
-        # set timezone with localize, it doesn't change date/time parts (just adds tz info)
-        # and then convert to UTC, ie
-        # 06:00:00, EST-0500 -> 06:00:00 EST-0500 -> 12:00:00 CET+0100
-        rotation.start_date = tz.localize(rotation.start_date).astimezone(
-            datetime.timezone.utc
-        )
-        rotation.end_date = tz.localize(rotation.end_date).astimezone(
-            datetime.timezone.utc
-        )
-        self.store_factory.rotation().create(rotation)
-
-        # create all shifts
+        # UTC doesn't respect daylight-saving (DST)
+        #   Sat, 2025-03-08 09:00 EST -> Sat, 2025-03-08 14:00 UTC
+        #   Mon, 2025-03-10 10:00 EDT -> Mon, 2025-03-10 14:00 UTC
+        # hence, generate dates with naive datetime first to skip DST offsets
         shifter = Shifter.apply(
             start_dt=rotation.start_date,
             end_dt=rotation.end_date,
             temporal=rotation.schedule.temporal,
         )
 
+        # set timezone with localize, it doesn't change date/time parts (just adds tz info)
+        # and then convert to UTC, ie
+        # 06:00:00, EST-0500 -> 06:00:00 EST-0500 -> 12:00:00 CET+0100
+        rotation.start_date = tz.localize(rotation.start_date).astimezone(UTC)
+        rotation.end_date = tz.localize(rotation.end_date).astimezone(UTC)
+        self.store_factory.rotation().create(rotation)
+
+        # create all shifts
         fighters = cycle(rotation.fighters)
 
         shift_store = self.store_factory.shifts(rotation)
@@ -52,8 +53,8 @@ class OncallService:
         for start_dt, end_dt in pairwise(shifter.get_index(rotation.schedule.each)):
             shift = Shift(
                 firefighter=next(fighters),
-                start_date=start_dt,
-                end_date=end_dt,
+                start_date=tz.localize(start_dt).astimezone(UTC),
+                end_date=tz.localize(end_dt).astimezone(UTC),
             )
             logger.debug(f"create {shift=}")
             shift_store.create(shift)

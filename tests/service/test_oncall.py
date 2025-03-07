@@ -62,6 +62,38 @@ def test_oncall_service__create_rotation_with_timezone() -> None:
     ]
 
 
+def test_oncall_service__create_rotation_with_timezone_over_dst() -> None:
+    svc = OncallService(InMemoryStoreFactory())
+
+    rotation = Rotation(
+        schedule=Schedule(each=2, temporal=Temporal.day),
+        fighters=["f1", "f2", "f3"],
+        # dates cross DST
+        start_date=dt.datetime(2025, 3, 8, 9),
+        end_date=dt.datetime(2025, 3, 12, 9),
+        timezone="America/New_York",
+    )
+
+    shifts = svc.create_rotation(rotation)
+    assert len(shifts) == 2
+    # EST = UTC−05:00
+    assert shifts == [
+        Shift(
+            id=shifts[0].id,
+            firefighter="f1",
+            start_date=dt.datetime(2025, 3, 8, 14, tzinfo=dt.timezone.utc),
+            # UTC is shifted from 14 to 13 with respect to EST->EDT shift
+            end_date=dt.datetime(2025, 3, 10, 13, tzinfo=dt.timezone.utc),
+        ),
+        Shift(
+            id=shifts[1].id,
+            firefighter="f2",
+            start_date=dt.datetime(2025, 3, 10, 13, tzinfo=dt.timezone.utc),
+            end_date=dt.datetime(2025, 3, 12, 13, tzinfo=dt.timezone.utc),
+        ),
+    ]
+
+
 def test_oncall_service__get_current_shift(rotation: Rotation) -> None:
     svc = OncallService(InMemoryStoreFactory())
     svc.create_rotation(rotation)
