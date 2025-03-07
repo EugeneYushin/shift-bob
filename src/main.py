@@ -146,6 +146,7 @@ def handle_create(
             blocks=[
                 InputBlock(
                     block_id="fighters_block",
+                    # TODO UserMultiSelectElement doesn't allow to filter users from the current channel only
                     element=UserMultiSelectElement(
                         action_id="fighters_select",
                         placeholder=PlainTextObject(text="Choose you fighters"),
@@ -169,13 +170,14 @@ def handle_create(
                         StaticSelectElement(
                             action_id="schedule_temporal_select",
                             options=[
-                                Option(text=PlainTextObject(text="days"), value="day"),
+                                Option(text=PlainTextObject(text="days"), value=Temporal.day),
+                                Option(text=PlainTextObject(text="business days"), value=Temporal.bday),
                                 Option(
-                                    text=PlainTextObject(text="weeks"), value="week"
+                                    text=PlainTextObject(text="weeks"), value=Temporal.week,
                                 ),
                             ],
                             initial_option=Option(
-                                text=PlainTextObject(text="days"), value="day"
+                                text=PlainTextObject(text="business days"), value=Temporal.bday
                             ),
                         ),
                     ],
