@@ -18,6 +18,10 @@ class SQLConfing(BaseModel):
     url: str
 
 
+class View(BaseModel):
+    shift_datetime_format: str = "%a, %Y-%m-%d %H:%M"
+
+
 class Config(BaseSettings):
     mode: SlackMode = SlackMode.socket
     port: int = 3000
@@ -25,5 +29,6 @@ class Config(BaseSettings):
     sql: SQLConfing | None = SQLConfing(url="sqlite:///:memory:")
     # timezone: str = "America/New_York"
     timezone: str = "UTC"  # TODO UTC is depicted as "Time zone: Monrovia, Reykjavik" in Slack time-picker
+    view: View = View()
 
     model_config = SettingsConfigDict(env_prefix="BOB_", env_nested_delimiter="__")
