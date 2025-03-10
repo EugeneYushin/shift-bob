@@ -51,6 +51,14 @@ def match_create(command: dict[str, Any]) -> bool:
     return str(command.get("text", "")) == "create"
 
 
+def convert_date(dt: datetime, tz: str) -> str:
+    return (
+        pytz.utc.localize(dt)
+        .astimezone(pytz.timezone(tz))
+        .strftime(Config().view.shift_datetime_format)
+    )
+
+
 @app.middleware  # or app.use(log_request)
 def log_request(
     logger: Logger, body: dict[str, Any], next: Callable[[], BoltResponse]
@@ -83,7 +91,7 @@ def handle_list(
     # headers = [MarkdownTextObject(text="*Shifts:*"), MarkdownTextObject(text="*Swaps:*")]
     fields = [
         MarkdownTextObject(
-            text=f"`{pytz.utc.localize(s.start_date).astimezone(pytz.timezone(tz)).strftime('%a, %Y-%m-%d %H:%M %Z')}` <@{s.firefighter}>"
+            text=f"`{convert_date(s.start_date, tz)}` <@{s.firefighter}>",
         )
         for s in shifts
     ]
