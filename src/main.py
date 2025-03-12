@@ -79,7 +79,7 @@ def handle_list(
     logger.info(f"{shifts=}")
 
     if not shifts:
-        respond(text=":poop: No shifts are set!", response_type="in_channel")
+        respond(text=":poop: No shifts are set!", response_type="ephemeral")
         return
 
     current_shift = shifts[0]
@@ -127,18 +127,22 @@ def handle_list(
                 text=f"Timezone: {tz}",
             ),
         ],
-        response_type="in_channel",
+        response_type="ephemeral",
     )
 
 
 @app.command("/oncall", matchers=[match_create])
 def handle_create(
-    body: dict[str, Any], ack: Ack, client: WebClient, logger: Logger
+    body: dict[str, Any],
+    ack: Ack,
+    client: WebClient,
+    logger: Logger,
+    respond: Respond,
 ) -> None:
     logger.info(body)
     ack()
 
-    client.views_open(
+    res = client.views_open(
         trigger_id=body["trigger_id"],
         view=View(
             type="modal",
@@ -212,6 +216,12 @@ def handle_create(
         ),
     )
 
+    logger.info(f"view response: {res}")
+    # TODO handle list to show the shifts on completion
+    respond(
+        ":white_check_mark: New rotation has been created!", response_type="in_channel"
+    )
+
 
 @app.view("view-oncall-create")
 def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
@@ -267,9 +277,6 @@ def view_submission(ack: Ack, body: dict[str, Any], logger: Logger) -> None:
     shifts = oncall_svc.create_rotation(rotation)
 
     logger.info(f"{shifts[:5]=}")
-
-    # TODO handle list to show the shifts on completion
-    ack(":white_check_mark: Done!", response_type="ephemeral")  # in_channel
 
 
 @app.event("app_mention")
